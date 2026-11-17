@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f8fafc"><meta name="description" content="Pintar-o-Seti: livro de colorir digital relaxante.">
+<title>Pintar-o-Seti — Livro de Colorir</title>
+<style>
+:root{color-scheme:light;--ink:#172033;--muted:#778197;--line:#e7ebf1;--paper:#f8fafc;--accent:#7865df}
+*{box-sizing:border-box}body{margin:0;background:#fff;color:var(--ink);font:15px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh}
+button{font:inherit;color:inherit;cursor:pointer}button:focus-visible{outline:3px solid #a99df5;outline-offset:3px}
+.app{min-height:100dvh;display:flex;flex-direction:column;max-width:1180px;margin:auto;padding:0 18px}
+header{height:68px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--line);flex-shrink:0}
+.brand{font-weight:800;letter-spacing:-.6px;font-size:18px}.brand span{color:var(--accent)}.sub{font-size:12px;color:var(--muted);margin-left:2px}
+.icon-btn{border:1px solid var(--line);background:white;border-radius:13px;width:42px;height:42px;display:grid;place-items:center;transition:.18s}.icon-btn:hover{background:#f3f1ff;border-color:#d7d0ff}.icon-btn:disabled{opacity:.35;cursor:not-allowed}
+.icon-btn svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.head-spacer{flex:1}.zoom-label{font-size:12px;color:var(--muted);min-width:42px;text-align:center}
+main{flex:1;min-height:0;display:flex;flex-direction:column;padding:14px 0 10px}
+.toolbar-top{display:flex;align-items:center;gap:8px;margin-bottom:12px}.drawing-name{font-weight:700;font-size:14px;margin-right:auto}
+.canvas-wrap{flex:1;min-height:340px;background:var(--paper);border:1px solid #edf0f5;border-radius:22px;display:grid;place-items:center;overflow:hidden;position:relative;touch-action:pan-y}
+.canvas-wrap:after{content:"";position:absolute;inset:10px;border:1px dashed #e4e9f0;border-radius:15px;pointer-events:none}
+#art{width:min(100%,720px);height:100%;max-height:690px;min-height:340px;overflow:visible;transition:transform .18s;transform-origin:center;z-index:1}
+.region{fill:#fff;stroke:#171923;stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round;cursor:crosshair;transition:fill .12s}.region:hover{stroke:#7562d7;stroke-width:3.5}
+.detail{fill:none;stroke:#171923;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.dot{fill:#171923;pointer-events:none}.tiny{stroke-width:1.6}
+.bottom{padding:12px 0 max(14px,env(safe-area-inset-bottom));border-top:1px solid var(--line);flex-shrink:0}
+.actions{display:flex;align-items:center;gap:8px;overflow-x:auto;padding:2px 1px 12px;scrollbar-width:none}.actions::-webkit-scrollbar,.palette::-webkit-scrollbar{display:none}
+.action{height:42px;min-width:44px;padding:0 12px;display:flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--line);border-radius:13px;background:#fff;font-size:12px;font-weight:650;white-space:nowrap}.action svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.action.active{background:#f0edff;border-color:#c9c0ff;color:#5745bd}.action.danger{color:#c34d5a}.action.primary{background:var(--accent);border-color:var(--accent);color:white}
+.palette-label{font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin:2px 0 8px}
+.palette{display:flex;gap:11px;overflow-x:auto;padding:3px 2px 10px;scrollbar-width:none}
+.swatch{flex:0 0 34px;width:34px;height:34px;border-radius:50%;border:2px solid white;box-shadow:0 0 0 1px #dce1e9;position:relative;padding:0}
+.swatch.selected{box-shadow:0 0 0 2px var(--accent),0 3px 9px #18213a26;transform:scale(1.08)}
+.swatch.selected:after{content:"";position:absolute;inset:9px;border:1.5px solid #ffffffb5;border-radius:50%}
+.shades{height:28px;display:grid;grid-template-columns:repeat(7,1fr);border-radius:9px;overflow:hidden;border:1px solid #00000010}
+.shade{border:0;border-right:1px solid #ffffff65;padding:0}.shade:last-child{border:0}.shade.selected{outline:3px solid var(--accent);outline-offset:-3px;z-index:1}
+.hint{font-size:11px;color:#8992a3;text-align:center;margin-top:9px}
+.gallery{display:none;position:fixed;inset:0;background:#ffffffed;backdrop-filter:blur(8px);z-index:5;padding:24px;overflow:auto}.gallery.open{display:block}.gallery-inner{max-width:900px;margin:5vh auto}.gallery h2{font-size:24px;letter-spacing:-.7px;margin:0 0 6px}.gallery p{color:var(--muted);margin:0 0 22px}.gallery-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.gallery-card{border:1px solid var(--line);border-radius:18px;background:white;padding:12px;text-align:left;box-shadow:0 5px 20px #1b25400a}.gallery-card:hover{border-color:#bdb2ff;transform:translateY(-2px)}.thumb{height:160px;background:var(--paper);border-radius:12px;display:grid;place-items:center;margin-bottom:10px}.thumb svg{width:100%;height:100%}.gallery-card strong{display:block}.gallery-card small{color:var(--muted)}.close-gallery{float:right}
+@media(max-width:600px){.app{padding:0 12px}header{height:60px}.sub{display:none}.toolbar-top{margin-bottom:9px}.canvas-wrap{min-height:300px;border-radius:17px}#art{min-height:300px}.action .word{display:none}.action{min-width:43px;padding:0 11px}.gallery{padding:16px}.gallery-grid{grid-template-columns:1fr 1fr}.thumb{height:125px}}
+@media(min-width:800px){main{padding:18px 0 14px}.bottom{padding-top:16px}.palette{gap:14px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+<button class="icon-btn" id="openGallery" aria-label="Voltar para galeria" title="Galeria"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6M9 12h11"/></svg></button>
+<div><div class="brand">pintar<span>•</span>o<span>•</span>seti</div><div class="sub">Seu momento de tranquilidade</div></div>
+<div class="head-spacer"></div><button class="icon-btn" id="zoomOut" aria-label="Diminuir zoom"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5M8 10.8h5.6"/></svg></button><span class="zoom-label" id="zoomText">100%</span><button class="icon-btn" id="zoomIn" aria-label="Aumentar zoom"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5M8 10.8h5.6M10.8 8v5.6"/></svg></button>
+</header>
+<main>
+<div class="toolbar-top"><span class="drawing-name" id="drawingName">Raposa Mandala</span><span style="font-size:11px;color:#8992a3">Toque em uma área para colorir</span></div>
+<div class="canvas-wrap" id="canvasWrap"><svg id="art" viewBox="0 0 600 600" role="img" aria-label="Desenho vetorial para colorir"></svg></div>
+</main>
+<section class="bottom" aria-label="Ferramentas de pintura">
+<div class="actions">
+<button class="action" id="undo" title="Desfazer" aria-label="Desfazer"><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5M4 9h10a6 6 0 0 1 0 12h-2"/></svg><span class="word">Desfazer</span></button>
+<button class="action" id="redo" title="Refazer" aria-label="Refazer"><svg viewBox="0 0 24 24"><path d="m15 14 5-5-5-5m5 5H10a6 6 0 0 0 0 12h2"/></svg><span class="word">Refazer</span></button>
+<button class="action active" id="paint" title="Balde de tinta" aria-label="Balde de tinta"><svg viewBox="0 0 24 24"><path d="m4 13 8-9 8 8-8 8-8-7ZM8 9l7 7M16 4l4 4M19 19h.01"/></svg><span class="word">Balde</span></button>
+<button class="action" id="eraser" title="Borracha" aria-label="Borracha"><svg viewBox="0 0 24 24"><path d="m3 14 9-10 9 9-7 7H8l-5-6ZM8 20h13"/></svg><span class="word">Borracha</span></button>
+<button class="action danger" id="clear" title="Limpar tudo" aria-label="Limpar tudo"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6m4 4v6m6-6v6"/></svg><span class="word">Limpar</span></button>
+<button class="action primary" id="save" title="Salvar imagem" aria-label="Salvar imagem"><svg viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 20h16"/></svg><span class="word">Salvar</span></button>
+</div>
+<div class="palette-label">Escolha sua cor</div><div class="palette" id="palette"></div>
+<div class="palette-label" style="margin-top:1px">Tonalidades</div><div class="shades" id="shades"></div>
+<div class="hint">Pinte no seu ritmo · Seu progresso fica nesta tela enquanto você cria</div>
+</section>
+</div>
+<div class="gallery" id="gallery"><div class="gallery-inner"><button class="icon-btn close-gallery" id="closeGallery" aria-label="Fechar galeria">✕</button><h2>Escolha seu desenho</h2><p>Um pequeno intervalo para respirar e criar.</p><div class="gallery-grid" id="galleryGrid"></div></div></div>
+<script>
+const NS='http://www.w3.org/2000/svg';
+const paletteColors=['#2563eb','#16a34a','#facc15','#f97316','#ef4444','#9333ea','#92400e','#ec4899','#06b6d4','#64748b','#a3e635','#f5a3c7','#a78bfa','#f5e6c8','#111827'];
+let selectedBase=0,selectedColor=paletteColors[0],mode='paint',zoom=1,current='fox',undoStack=[],redoStack=[];
+const art=document.getElementById('art');
+function el(tag,attrs={},parent=art){const n=document.createElementNS(NS,tag);Object.entries(attrs).forEach(([k,v])=>n.setAttribute(k,v));parent.appendChild(n);return n}
+function region(tag,attrs={}){return el(tag,{...attrs,class:'region','data-region':'1'})}
+function line(d,attrs={}){return el('path',{d,class:'detail',...attrs})}
+function circle(cx,cy,r,attrs={}){return el('circle',{cx,cy,r,class:'region',...attrs})}
+function flower(cx,cy,r,petals=8){const g=el('g',{});for(let i=0;i<petals;i++){const a=i*Math.PI*2/petals;const x=cx+Math.cos(a)*r*.58,y=cy+Math.sin(a)*r*.58;el('ellipse',{cx:x,cy:y,rx:r*.23,ry:r*.43,transform:'rotate('+((a*180/Math.PI)+90)+' '+x+' '+y+')',class:'region'},g)}el('circle',{cx,cy,r:r*.22,class:'region'},g)}
+function mandala(cx,cy,r){for(let i=0;i<12;i++){const a=i*Math.PI/6,x=cx+Math.cos(a)*r*.68,y=cy+Math.sin(a)*r*.68;el('ellipse',{cx:x,cy:y,rx:r*.13,ry:r*.34,transform:'rotate('+(i*30+90)+' '+x+' '+y+')',class:'region'})}circle(cx,cy,r*.23);circle(cx,cy,r*.1)}
+function fox(){art.innerHTML='';
+ // symmetrical decorative ears and head
+ region('path',{d:'M170 250 Q145 160 166 78 Q235 103 273 175 Q300 160 327 175 Q365 103 434 78 Q455 160 430 250 Q465 300 438 390 Q414 485 300 520 Q186 485 162 390 Q135 300 170 250Z'});
+ region('path',{d:'M166 83 Q218 119 252 190 Q207 177 184 211 Q166 158 166 83Z'});region('path',{d:'M434 83 Q382 119 348 190 Q393 177 416 211 Q434 158 434 83Z'});
+ // face mask panels
+ region('path',{d:'M183 250 Q226 205 285 236 Q276 294 242 329 Q204 311 183 250Z'});region('path',{d:'M417 250 Q374 205 315 236 Q324 294 358 329 Q396 311 417 250Z'});
+ region('path',{d:'M206 350 Q247 317 300 344 Q353 317 394 350 Q377 447 300 470 Q223 447 206 350Z'});
+ // eye shapes
+ region('path',{d:'M211 286 Q245 251 278 282 Q250 321 211 286Z'});region('path',{d:'M389 286 Q355 251 322 282 Q350 321 389 286Z'});
+ circle(248,286,8);circle(352,286,8);circle(248,286,3,{fill:'#171923'});circle(352,286,3,{fill:'#171923'});
+ region('path',{d:'M278 355 Q300 336 322 355 Q316 380 300 384 Q284 380 278 355Z'});
+ line('M300 382 Q292 402 274 405 M300 382 Q308 402 326 405');
+ region('path',{d:'M255 427 Q300 400 345 427 Q300 469 255 427Z'});
+ // forehead jewel + mandala motifs
+ mandala(300,218,30);flower(190,365,22,6);flower(410,365,22,6);
+ mandala(220,155,20);mandala(380,155,20);
+ // bow
+ region('path',{d:'M270 480 Q230 445 225 480 Q231 514 278 496Z'});region('path',{d:'M330 480 Q370 445 375 480 Q369 514 322 496Z'});circle(300,486,12);
+ // body floral ornaments at bottom
+ flower(300,535,22,8);
+ line('M176 265 Q200 240 220 235 M424 265 Q400 240 380 235');
+}
+function blossom(){art.innerHTML='';circle(300,300,210);circle(300,300,185);mandala(300,300,65);for(let ring=0;ring<2;ring++){let count=ring?16:12,r=ring?145:100,pr=ring?47:39;for(let i=0;i<count;i++){let a=i*Math.PI*2/count+(ring?0:Math.PI/12),x=300+Math.cos(a)*r,y=300+Math.sin(a)*r;el('ellipse',{cx:x,cy:y,rx:pr*.55,ry:pr,transform:'rotate('+(a*180/Math.PI+90)+' '+x+' '+y+')',class:'region'});flower(x,y,pr*.34,6)}}for(let i=0;i<24;i++){let a=i*Math.PI/12,x=300+Math.cos(a)*205,y=300+Math.sin(a)*205;el('ellipse',{cx:x,cy:y,rx:8,ry:16,transform:'rotate('+(i*15+90)+' '+x+' '+y+')',class:'region'})}}
+function butterfly(){art.innerHTML='';circle(300,300,225);region('path',{d:'M293 270 Q236 110 105 125 Q65 190 130 285 Q185 340 293 315Z'});region('path',{d:'M307 270 Q364 110 495 125 Q535 190 470 285 Q415 340 307 315Z'});region('path',{d:'M293 330 Q220 340 190 455 Q245 492 300 375Z'});region('path',{d:'M307 330 Q380 340 410 455 Q355 492 300 375Z'});region('ellipse',{cx:300,cy:315,rx:18,ry:105});region('path',{d:'M294 218 Q248 135 218 120 M306 218 Q352 135 382 120'});circle(218,120,8);circle(382,120,8);mandala(175,225,30);mandala(425,225,30);flower(245,390,25,7);flower(355,390,25,7);for(let i=0;i<8;i++){let y=245+i*18;line('M285 '+y+' Q300 '+(y+9)+' 315 '+y,{ 'stroke-width':1.5})}}
+const drawings=[{id:'fox',name:'Raposa Mandala',draw:fox},{id:'flower',name:'Flor Mandala',draw:blossom},{id:'butterfly',name:'Borboleta',draw:butterfly}];
+function snapshot(){return [...art.querySelectorAll('[data-region]')].map(x=>x.getAttribute('fill')||'#ffffff')}
+function restore(s){art.querySelectorAll('[data-region]').forEach((x,i)=>x.setAttribute('fill',s[i]||'#ffffff'))}
+function pushHistory(){undoStack.push(snapshot());if(undoStack.length>80)undoStack.shift();redoStack=[];updateHistory()}
+function updateHistory(){document.getElementById('undo').disabled=!undoStack.length;document.getElementById('redo').disabled=!redoStack.length}
+function chooseDrawing(id){current=id;const d=drawings.find(x=>x.id===id);d.draw();document.getElementById('drawingName').textContent=d.name;undoStack=[];redoStack=[];zoom=1;applyZoom();updateHistory();document.getElementById('gallery').classList.remove('open')}
+art.addEventListener('click',e=>{const target=e.target.closest('[data-region]');if(!target)return;pushHistory();target.setAttribute('fill',mode==='eraser'?'#ffffff':selectedColor)});
+function shades(hex){let n=parseInt(hex.slice(1),16),r=n>>16,g=n>>8&255,b=n&255;return [0.78,0.58,0.36,0,-.16,-.32,-.48].map(v=>{let f=v>=0?(c=>c+(255-c)*v):(c=>c*(1+v));return '#'+[r,g,b].map(c=>Math.round(f(c)).toString(16).padStart(2,'0')).join('')})}
+function renderPalette(){const p=document.getElementById('palette');p.innerHTML='';paletteColors.forEach((c,i)=>{let b=document.createElement('button');b.className='swatch'+(i===selectedBase?' selected':'');b.style.background=c;b.title='Cor '+(i+1);b.setAttribute('aria-label','Selecionar cor '+c);b.onclick=()=>{selectedBase=i;selectedColor=c;mode='paint';setMode();renderPalette();renderShades()};p.appendChild(b)})}
+function renderShades(){let s=document.getElementById('shades');s.innerHTML='';shades(paletteColors[selectedBase]).forEach((c,i)=>{let b=document.createElement('button');b.className='shade'+(c===selectedColor?' selected':'');b.style.background=c;b.title='Tonalidade '+(i+1);b.setAttribute('aria-label','Selecionar tonalidade '+(i+1));b.onclick=()=>{selectedColor=c;mode='paint';setMode();renderShades()};s.appendChild(b)})}
+function setMode(){document.getElementById('paint').classList.toggle('active',mode==='paint');document.getElementById('eraser').classList.toggle('active',mode==='eraser')}
+function applyZoom(){art.style.transform='scale('+zoom+')';document.getElementById('zoomText').textContent=Math.round(zoom*100)+'%'}
+document.getElementById('zoomIn').onclick=()=>{zoom=Math.min(1.55,+(zoom+.1).toFixed(2));applyZoom()};document.getElementById('zoomOut').onclick=()=>{zoom=Math.max(.7,+(zoom-.1).toFixed(2));applyZoom()};
+document.getElementById('paint').onclick=()=>{mode='paint';setMode()};document.getElementById('eraser').onclick=()=>{mode='eraser';setMode()};
+document.getElementById('undo').onclick=()=>{if(!undoStack.length)return;redoStack.push(snapshot());restore(undoStack.pop());updateHistory()};document.getElementById('redo').onclick=()=>{if(!redoStack.length)return;undoStack.push(snapshot());restore(redoStack.pop());updateHistory()};
+document.getElementById('clear').onclick=()=>{if(!art.querySelector('[data-region][fill]:not([fill="#ffffff"])'))return;if(!confirm('Deseja apagar todas as cores deste desenho?'))return;pushHistory();art.querySelectorAll('[data-region]').forEach(x=>x.setAttribute('fill','#ffffff'))};
+document.getElementById('save').onclick=()=>{const clone=art.cloneNode(true);clone.setAttribute('xmlns',NS);clone.setAttribute('width','1200');clone.setAttribute('height','1200');clone.style.transform='none';const svg=new Blob([new XMLSerializer().serializeToString(clone)],{type:'image/svg+xml;charset=utf-8'});const url=URL.createObjectURL(svg);const img=new Image();img.onload=()=>{const c=document.createElement('canvas');c.width=c.height=1200;const ctx=c.getContext('2d');ctx.fillStyle='#ffffff';ctx.fillRect(0,0,1200,1200);ctx.drawImage(img,0,0,1200,1200);URL.revokeObjectURL(url);c.toBlob(blob=>{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pintar-o-seti-'+current+'.png';a.click();URL.revokeObjectURL(a.href)},'image/png')};img.onerror=()=>{URL.revokeObjectURL(url);alert('Não foi possível exportar agora. Tente novamente.')};img.src=url};
+const grid=document.getElementById('galleryGrid');drawings.forEach(d=>{const b=document.createElement('button');b.className='gallery-card';const thumb=document.createElement('div');thumb.className='thumb';const t=document.createElementNS(NS,'svg');t.setAttribute('viewBox','0 0 600 600');t.style.width='100%';t.style.height='100%';b.append(thumb);thumb.append(t);const label=document.createElement('strong');label.textContent=d.name;const desc=document.createElement('small');desc.textContent='Desenho para colorir';b.append(label,desc);b.onclick=()=>chooseDrawing(d.id);grid.append(b);const old=art;const temp=art.cloneNode(false);document.body.append(temp);const keep=art; // thumbnail generated in isolated SVG below
+const saved=art.innerHTML;d.draw();t.innerHTML=art.innerHTML;art.innerHTML=saved;temp.remove()});
+document.getElementById('openGallery').onclick=()=>document.getElementById('gallery').classList.add('open');document.getElementById('closeGallery').onclick=()=>document.getElementById('gallery').classList.remove('open');
+renderPalette();renderShades();chooseDrawing('fox');updateHistory();
+</script>
+</body></html>
